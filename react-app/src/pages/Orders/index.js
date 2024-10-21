@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Table,
@@ -27,14 +27,14 @@ import {
 } from "@mui/material";
 
 export default function Orders() {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [hasErrors, setErrors] = useState(false);
   const [orders, setOrders] = useState([]);
 
   async function fetchOrders() {
     try {
-      const response = await fetch(`${process.env.REACT_APP_ORDERS_URL}`);
+      const response = await fetch(`${import.meta.env.REACT_APP_ORDERS_URL}`);
       const orders = await response.json();
       setOrders(orders);
     } catch (err) {
@@ -87,7 +87,7 @@ export default function Orders() {
                   sx={{ cursor: "pointer" }}
                   key={order.id}
                   onClick={() => {
-                    history.push(`/orders/${order.id}`);
+                    navigate(`/orders/${order.id}`);
                   }}
                 >
                   <TableCell component="th" scope="row">

@@ -30,7 +30,7 @@ export default function Products() {
 
   async function fetchData() {
     try {
-      const response = await fetch(`${process.env.REACT_APP_PRODUCTS_URL}`);
+      const response = await fetch(`${import.meta.env.REACT_APP_PRODUCTS_URL}`);
       const products = await response.json();
       setProducts(products);
     } catch (err) {

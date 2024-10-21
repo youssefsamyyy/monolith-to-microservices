@@ -14,21 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { useState, useEffect } from "react";
-import { useRouteMatch } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Box, Paper, Grid, Typography } from "@mui/material";
 
 export default function OrderDetails() {
-  const match = useRouteMatch();
+  const { id: orderId } = useParams();
 
   const [hasErrors, setErrors] = useState(false);
   const [order, setOrder] = useState({});
 
-  const orderId = match.params.id;
-
   async function fetchOrder(orderId) {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_ORDERS_URL}/${orderId}`
+        `${import.meta.env.REACT_APP_ORDERS_URL}/${orderId}`
       );
       const order = await response.json();
       setOrder(order);
