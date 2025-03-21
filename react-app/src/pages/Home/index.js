@@ -25,6 +25,7 @@ export default function Home() {
           width: "800px",
           margin: "0 auto",
           padding: (theme) => theme.spacing(3, 2),
+          textAlign: "center",
         }}
       >
         <Typography variant="h5">Welcome to the Fancy Store!</Typography>
@@ -32,6 +33,16 @@ export default function Home() {
         <Typography variant="body1">
           Take a look at our wide variety of products.
         </Typography>
+        <br />
+
+        {/* Embedded HTML File */}
+        <iframe
+          src="/testing.html"
+          width="100%"
+          height="600px"
+          style={{ border: "none", marginTop: "20px" }}
+          title="Embedded Page"
+        ></iframe>
       </Paper>
     </Box>
   );

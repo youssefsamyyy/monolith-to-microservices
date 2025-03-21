@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget</title>
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+    
+    /* Floating Chat Icon - Draggable */
+    #chatContainer {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: grab;
+        z-index: 9999;
+        transition: transform 0.3s ease;
+    }
+    
+    /* Hello AI Message */
+    #helloMessage {
+        background: #000204;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 15px;
+        font-size: 14px;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s;
+    }
+    
+    /* Chat Icon */
+    #chatIcon {
+        width: 60px;
+        height: 60px;
+        background-color: white;
+        border-radius: 50%;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: grab;
+        position: relative;
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    #chatIcon:hover {
+        transform: scale(1.1);
+    }
+    
+    #chatIcon img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+    }
+    
+    /* Chat Box - Glassmorphism */
+    #chatBox {
+        width: 350px;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 9999;
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    /* Chat Header */
+    .chatHeader {
+        background: #04070a;
+        color: white;
+        padding: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .chatHeader button {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 18px;
+        transition: transform 0.2s;
+    }
+    
+    .chatHeader button:hover {
+        transform: rotate(90deg);
+    }
+    
+    /* Chat Messages */
+    #chatMessages {
+        height: 150px;
+        overflow-y: auto;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        background: #f9f9f9;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Suggested Buttons */
+    .suggested-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        align-items: center;
+        background: #f9f9f9;
+    }
+    
+    .suggested-buttons button {
+        width: 90%;
+        padding: 10px;
+        border: 2px solid #000204;
+        background: white;
+        color: #000204;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .suggested-buttons button:hover {
+        background: #000204;
+        color: white;
+        transform: scale(1.05);
+    }
+    
+    /* Chat Input */
+    #chatInput {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        background: white;
+        gap: 5px;
+    }
+    
+    #chatInput input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    
+    /* Send Button */
+    #chatInput button {
+        background: linear-gradient(135deg, #000101, #1a1a1a);
+        color: white;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out, transform 0.2s;
+        font-size: 14px;
+    }
+    
+    #chatInput button:hover {
+        background: linear-gradient(135deg, #0056b3, #003d82);
+        transform: scale(1.05);
+    }
+    
+    /* File Upload Button */
+    .file-upload {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        transition: transform 0.2s;
+    }
+    
+    .file-upload:hover {
+        transform: scale(1.1);
+    }
+    /* User and Bot Messages */
+    .user-message {
+    align-self: flex-end;
+    background-color: #007bff;
+    color: white;
+    border-radius: 10px 10px 0 10px;
+    padding: 8px 12px;
+    margin: 4px 0;
+    max-width: 70%;
+    position: relative;
+    }
+    
+    .bot-message {
+    align-self: flex-start;
+    background-color: #e9ecef;
+    color: black;
+    border-radius: 10px 10px 10px 0;
+    padding: 8px 12px;
+    margin: 4px 0;
+    max-width: 70%;
+    position: relative;
+    }
+    
+    /* Timestamp */
+    .timestamp {
+    font-size: 10px;
+    color: #666;
+    margin-top: 4px;
+    display: block;
+    text-align: right;
+    }
+    
+    .bot-message .timestamp {
+    text-align: left;
+    }
+    
+    /* Date Separator */
+    .date-separator {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    margin: 10px 0;
+    position: relative;
+    }
+    
+    .date-separator::before,
+    .date-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+    margin: auto 10px;
+    }
+    
+    .date-separator::before {
+    margin-right: 10px;
+    }
+    
+    .date-separator::after {
+    margin-left: 10px;
+    }
+    </style>
+</head>
+<body>
+    <div id="chatContainer">
+        <div id="helloMessage">Your AI Agent</div>
+        <div id="chatIcon" onmousedown="startDrag(event)">
+            <img src="data:image/png;base64,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" alt="Chat Icon">
+        </div>
+    </div>
+    
+    <div id="chatBox">
+        <div class="chatHeader">
+            Your AI Agent
+            <button onclick="toggleChat()">❌</button>
+        </div>
+        
+        <div id="chatMessages"></div>
+        <div class="suggested-buttons">
+            <button onclick="searchAction()">Ask ACCD🔍</button>
+            <button onclick="registerRequired('summary')">Summary of ACCD publications📄 </button>
+            <button onclick="registerRequired('autocorrection')"> Correcting child Media Experssion🛠  </button>
+        </div>
+        <div id="chatInput">
+            <input type="text" id="userInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+          
+        <!-- Google Cloud Agent Builder Search Widget -->
+          <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=ar"></script>
+    
+          <!-- Hidden Search Widget -->
+          <gen-search-widget 
+              configId="77e0a14d-84b2-4578-b8e8-90b1018cb539"
+              triggerId="searchWidgetTrigger">
+          </gen-search-widget>
+      
+          <!-- Hidden button to trigger the search -->
+          <button id="searchWidgetTrigger" style="display: none;"></button>
+      
+        
+    </div>
+    
+    <script>
+      let isDragging = false;
+    
+      function toggleChat() {
+    let chatBox = document.getElementById("chatBox");
+    if (chatBox.style.display === "none" || chatBox.style.display === "") {
+        chatBox.style.display = "flex"; // Ensure visibility
+        chatBox.style.flexDirection = "column"; // Maintain layout
+    } else {
+        chatBox.style.display = "none";
+    }
+    }
+    
+    function searchAction() {
+              const triggerButton = document.getElementById("searchWidgetTrigger");
+              if (triggerButton) {
+                  triggerButton.click();
+              }
+          }
+    
+    
+    // Drag functionality
+    let chatContainer = document.getElementById("chatContainer");
+    let offsetX, offsetY;
+    
+    chatContainer.addEventListener("mousedown", (event) => {
+    isDragging = false; 
+    offsetX = event.clientX - chatContainer.getBoundingClientRect().left;
+    offsetY = event.clientY - chatContainer.getBoundingClientRect().top;
+    
+    function moveChat(e) {
+        isDragging = true;
+        chatContainer.style.left = `${e.clientX - offsetX}px`;
+        chatContainer.style.top = `${e.clientY - offsetY}px`;
+        chatContainer.style.position = "fixed";
+    }
+    
+    function stopDrag() {
+        setTimeout(() => (isDragging = false), 100); // Allow slight delay before reset
+        document.removeEventListener("mousemove", moveChat);
+        document.removeEventListener("mouseup", stopDrag);
+    }
+    
+    document.addEventListener("mousemove", moveChat);
+    document.addEventListener("mouseup", stopDrag);
+    });
+    // Ensure clicking chat icon toggles chat
+    document.getElementById("chatIcon").addEventListener("click", toggleChat);
+    
+        function sendMessage() {
+            let userInput = document.getElementById("userInput");
+            let chatMessages = document.getElementById("chatMessages");
+    
+            if (userInput.value.trim() !== "") {
+                let userMessage = document.createElement("div");
+                userMessage.className = "message user-message";
+                userMessage.textContent = userInput.value;
+                chatMessages.appendChild(userMessage);
+                userInput.value = "";
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+    
+        function registerRequired(feature) {
+              if (confirm(`You must Register first Before Use ${feature}.click Ok to navigate to register page.`)) {
+                  window.location.href = 'register.html';
+              }
+          }
+        
+        function startDrag(event) {
+            let chatContainer = document.getElementById("chatContainer");
+            let shiftX = event.clientX - chatContainer.getBoundingClientRect().left;
+            let shiftY = event.clientY - chatContainer.getBoundingClientRect().top;
+            
+            function moveAt(pageX, pageY) {
+                chatContainer.style.left = pageX - shiftX + 'px';
+                chatContainer.style.top = pageY - shiftY + 'px';
+            }
+            
+            function onMouseMove(event) {
+                moveAt(event.pageX, event.pageY);
+            }
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.onmouseup = function() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.onmouseup = null;
+            };
+        }
+    function sendMessage() {
+    let userInput = document.getElementById("userInput");
+    let chatMessages = document.getElementById("chatMessages");
+    
+    if (userInput.value.trim() !== "") {
+        // Add user message
+        addMessage(userInput.value, "user");
+        userInput.value = "";
+    
+        // Auto-reply from bot
+        setTimeout(() => {
+            addMessage("Under devolopment", "bot");
+        }, 500);
+    }
+    }
+    function addMessage(text, sender) {
+    let chatMessages = document.getElementById("chatMessages");
+    let messageDiv = document.createElement("div");
+    let timeSpan = document.createElement("span");
+    let now = new Date();
+    let timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    let currentDate = now.toDateString();
+    // Check if the date has changed
+    let lastMessage = chatMessages.lastElementChild;
+    let lastDate = lastMessage ? lastMessage.getAttribute("data-date") : null;
+    
+    if (currentDate !== lastDate) {
+        let dateSeparator = document.createElement("div");
+        dateSeparator.className = "date-separator";
+        dateSeparator.textContent = currentDate;
+        chatMessages.appendChild(dateSeparator);
+    }
+    // Set message class and content
+    messageDiv.className = sender === "user" ? "user-message" : "bot-message";
+    messageDiv.textContent = text;
+    messageDiv.setAttribute("data-date", currentDate);
+    
+    // Add timestamp
+    timeSpan.className = "timestamp";
+    timeSpan.textContent = timeString;
+    messageDiv.appendChild(timeSpan);
+    
+    // Append message to chat
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    </script>
+</body>
+</html>
